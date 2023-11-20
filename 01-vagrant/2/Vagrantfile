@@ -1,0 +1,62 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "html_vm" do |html|
+    html.vm.box = "generic/debian11"
+    html.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+    end
+    html.vm.synced_folder ".", "/var/www/html"
+
+    html.vm.network "forwarded_port", guest: 80, host: 8080
+    html.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2
+    SHELL
+
+    html.vm.provision "shell", inline: <<-SHELL
+      sh -c 'echo "<VirtualHost *:8080>
+          ServerAdmin vagrant@localhost
+          DocumentRoot /var/www/html
+          ServerName localhost
+
+          <Directory /var/www/html/>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+      </VirtualHost>" > /etc/apache2/sites-available/html.conf'
+      sudo systemctl restart apache2
+    SHELL
+  end
+
+  config.vm.define "php_vm" do |php|
+    php.vm.box = "generic/debian11"
+    php.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+    end
+    config.vm.synced_folder ".", "/var/www/html"
+
+    php.vm.network "forwarded_port", guest: 80, host: 8081
+    php.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2 php libapache2-mod-php
+    SHELL
+
+    php.vm.provision "shell", inline: <<-SHELL
+      sh -c 'echo "<VirtualHost *:8081>
+          ServerAdmin vagrant@localhost
+          DocumentRoot /var/www/html
+          ServerName localhost
+
+          <Directory /var/www/html/>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+      </VirtualHost>" > /etc/apache2/sites-available/php.conf'
+      sudo systemctl restart apache2
+    SHELL
+
+  end
+end
