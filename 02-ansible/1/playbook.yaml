@@ -1,0 +1,64 @@
+---
+- name: Two sites
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Install Apache and PHP
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - apache2
+      - php
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted
+
+  - name: Configurate Apache and add port 81
+    lineinfile:
+      path: /etc/apache2/ports.conf
+      line: "Listen 81"
+
+  - name: Configure host for HTML
+    copy:
+      content: |
+        <VirtualHost *:80>
+            ServerName localhost
+            DocumentRoot /vagrant/html
+        </VirtualHost>
+      dest: /etc/apache2/sites-available/000-default.conf
+    notify:
+      - restart apache
+
+  - name: Configure host for PHP
+    copy:
+      content: |
+        <VirtualHost *:81>
+            DocumentRoot /var/www/php
+            DirectoryIndex index.php
+            <Directory /vagrant/php>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Require all granted
+            </Directory>
+        </VirtualHost>
+      dest: /etc/apache2/sites-available/php.conf
+    notify:
+      - restart apache
+
+  - name: Enable virtual hosts
+    command: "a2ensite {{ item }}"
+    with_items:
+      - 000-default.conf
+      - php.conf
+    notify:
+      - restart apache
+
+  handlers:
+  - name: restart apache
+    service:
+      name: apache2
+      state: restarted
