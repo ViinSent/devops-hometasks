@@ -25,17 +25,17 @@ Vagrant.configure("2") do |config|
       # Добавляем порт 81 в прослушиваемый
       sed -i 's/Listen 80/Listen 80\\nListen 81/' /etc/apache2/ports.conf
 
-      # Копирование файлов конфигурации для Apache
+      # Копирование файлов конфигурации для Apache2
       cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/php.conf
 
-      # Настройка виртуальных хостов для HTML
+      # Настройка виртуального хоста для HTML
       sh -c 'echo "<VirtualHost *:80>
            ServerName localhost
            DocumentRoot /var/www/html
         </VirtualHost>" > /etc/apache2/sites-available/000-default.conf'
 
-      # Настройка виртуальных хостов для PHP
-      sudo sh -c 'echo "<VirtualHost *:81>
+      # Настройка виртуального хоста для PHP
+      sh -c 'echo "<VirtualHost *:81>
             DocumentRoot /var/www/php
             DirectoryIndex index.php
             <Directory /var/www/php>
