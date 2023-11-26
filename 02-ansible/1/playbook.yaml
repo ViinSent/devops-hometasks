@@ -22,7 +22,7 @@
       path: /etc/apache2/ports.conf
       line: "Listen 81"
 
-  - name: Copy index.html to /var/www/html
+  - name: Copy index.html
     copy:
       src: html/index.html
       dest: /var/www/html/
@@ -38,10 +38,10 @@
     notify:
       - restart apache
 
-  - name: Copy index.php to /var/www/html
+  - name: Copy index.php
     copy:
      src: php/index.php
-    dest: /var/www/php/
+     dest: /var/www/php/
 
   - name: Configure host for PHP
     copy:
