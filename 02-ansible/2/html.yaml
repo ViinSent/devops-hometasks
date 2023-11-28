@@ -1,0 +1,32 @@
+---
+- name: HTML-server
+  hosts: html_vm
+  become: true
+
+  tasks:
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Copy index.html
+      copy:
+        src: html/index.html
+        dest: /var/www/html/index.html
+
+    - name: Configure host for HTML
+      copy:
+        content: |
+          <VirtualHost *:80>
+              ServerName 192.168.33.10
+              DocumentRoot /var/www/html
+          </VirtualHost>
+        dest: /etc/apache2/sites-available/000-default.conf
+      notify:
+        - restart apache
+
+  handlers:
+  - name: restart apache
+    service:
+      name: apache2
+      state: restarted
