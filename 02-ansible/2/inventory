@@ -1,0 +1,6 @@
+html_vm ansible_host=192.168.33.10 ansible_connection=local
+
+php_vm ansible_host=192.168.33.12 ansible_connection=local
+
+nginx ansible_host=192.168.33.16 ansible_connection=local
+
