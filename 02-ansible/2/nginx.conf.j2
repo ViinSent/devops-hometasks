@@ -1,0 +1,11 @@
+server {
+    listen 80;
+
+    location /html_vm {
+        proxy_pass http://192.168.33.10
+    }
+
+    location /php_vm {
+        proxy_pass http://192.168.33.12;
+    }
+}

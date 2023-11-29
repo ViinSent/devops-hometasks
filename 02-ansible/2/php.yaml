@@ -1,0 +1,54 @@
+---
+- name: PHP-server
+  hosts: php_vm
+  become: true
+
+  tasks:
+  - name: Install Apache and PHP
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - apache2
+      - php
+
+  - name: Restart Apache
+    service:
+      name: apache2
+      state: restarted
+
+  - name: Copy index.php
+    copy:
+     src: php/index.php
+     dest: /var/www/html/index.php
+
+  - name: Configure host for PHP
+    copy:
+      content: |
+        <VirtualHost *:80>
+            ServerName 192.168.33.12
+            DocumentRoot /var/www/html
+            DirectoryIndex index.php
+            <Directory /var/www/html>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Require all granted
+            </Directory>
+        </VirtualHost>
+      dest: /etc/apache2/sites-available/000-default.conf
+    notify:
+      - restart apache
+
+  - name: Enable virtual hosts
+    command: "a2ensite {{ item }}"
+    with_items:
+      - 000-default.conf
+#      - php.conf
+    notify:
+      - restart apache
+
+  handlers:
+  - name: restart apache
+    service:
+      name: apache2
+      state: restarted
