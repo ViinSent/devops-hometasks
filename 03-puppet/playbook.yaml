@@ -9,7 +9,7 @@
         name: "{{ item }}"
         state: present
       loop:
-        - python
+        - python3.11
         - epel-release
         - ansible
         - puppetserver
