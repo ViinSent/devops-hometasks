@@ -4,14 +4,19 @@
   become: true
 
   tasks:
+    - name: Add Puppet Yum Repository
+      yum_repository:
+        name: puppet
+        description: Puppet Labs Products
+        baseurl: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+        gpgcheck: no
+
     - name: Install Puppet Server and r10k
       package:
         name: "{{ item }}"
         state: present
       loop:
-        - python3.11
         - epel-release
-        - ansible
         - puppetserver
         - git
       notify:
@@ -29,6 +34,13 @@
   become: true
 
   tasks:
+    - name: Add Puppet Yum Repository
+      yum_repository:
+        name: puppet
+        description: Puppet Labs Products
+        baseurl: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+        gpgcheck: no
+
     - name: Install Puppet Agent and PHP
       package:
         name: "{{ item }}"
