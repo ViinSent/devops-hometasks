@@ -1,0 +1,45 @@
+---
+- name: Master puppet
+  hosts: master.puppet
+  become: true
+
+  tasks:
+    - name: Install Puppet Server and r10k
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python
+        - epel-release
+        - ansible
+        - puppetserver
+        - git
+      notify:
+        - start puppet server
+
+  handlers:
+    - name: start puppet server
+      systemd:
+        name: puppetserver
+        state: started
+        enabled: yes
+
+- name: Slaves
+  hosts: slave1.puppet:slave2.puppet
+  become: true
+
+  tasks:
+    - name: Install Puppet Agent and PHP
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - puppet-agent
+        - apache2
+        - php
+        - git
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
