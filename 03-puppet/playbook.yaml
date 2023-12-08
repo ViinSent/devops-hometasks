@@ -4,20 +4,19 @@
   become: true
 
   tasks:
-    - name: Add Puppet Yum Repository
-      yum_repository:
-        name: puppet
-        description: Puppet Labs Products
-        baseurl: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
-        gpgcheck: no
+#    - name: Install the puppet rpm from a remote repo
+#      yum:
+#        name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+#        state: present
 
     - name: Install Puppet Server and r10k
-      package:
+      yum:
         name: "{{ item }}"
         state: present
       loop:
         - epel-release
         - puppetserver
+        - puppet
         - git
       notify:
         - start puppet server
@@ -34,15 +33,13 @@
   become: true
 
   tasks:
-    - name: Add Puppet Yum Repository
-      yum_repository:
-        name: puppet
-        description: Puppet Labs Products
-        baseurl: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
-        gpgcheck: no
+#    - name: install the puppet rpm from a remote repo
+#      yum:
+#        name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+#        state: present
 
     - name: Install Puppet Agent and PHP
-      package:
+      yum:
         name: "{{ item }}"
         state: present
       loop:
