@@ -1,25 +1,21 @@
 ---
-- name: Master puppet
-  hosts: master.puppet
+- name: Install Puppet on Master and Slaves
+  hosts: all
   become: true
+  gather_facts: false
 
   tasks:
-#    - name: Install the puppet rpm from a remote repo
-#      yum:
-#        name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
-#        state: present
-
-    - name: Install Puppet Server and r10k
+    - name: Install Puppet Server and r10k on Master
       yum:
         name: "{{ item }}"
         state: present
       loop:
         - epel-release
         - puppetserver
-        - puppet
         - git
       notify:
         - start puppet server
+      when: "'master' in inventory_hostname"
 
   handlers:
     - name: start puppet server
@@ -27,28 +23,21 @@
         name: puppetserver
         state: started
         enabled: yes
+      ignore_errors: true
 
-- name: Slaves
-  hosts: slave1.puppet:slave2.puppet
-  become: true
-
-  tasks:
-#    - name: install the puppet rpm from a remote repo
-#      yum:
-#        name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
-#        state: present
-
-    - name: Install Puppet Agent and PHP
+    - name: Install Puppet Agent and PHP on Slave
       yum:
         name: "{{ item }}"
         state: present
       loop:
         - puppet-agent
-        - apache2
+        - httpd
         - php
         - git
+      when: "'slave' in inventory_hostname"
 
-    - name: Restart Apache
+    - name: Restart httpd
       service:
-        name: apache2
+        name: httpd
         state: restarted
+      when: "'slave' in inventory_hostname"
