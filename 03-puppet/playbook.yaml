@@ -1,6 +1,6 @@
 ---
-- name: Install Puppet on Master and Slaves
-  hosts: all
+- name: Install Puppet on Master
+  hosts: master
   become: true
   gather_facts: false
 
@@ -13,18 +13,30 @@
         - epel-release
         - puppetserver
         - git
-      notify:
-        - start puppet server
       when: "'master' in inventory_hostname"
 
+    - name: Add or modify JAVA_ARGS in puppet.conf
+      lineinfile:
+        path: /etc/puppetlabs/puppet/puppet.conf
+        regexp: '^JAVA_ARGS='
+        line: 'JAVA_ARGS="-Xms256m -Xmx256m"'
+      notify:
+        - Start Puppet Server
+
   handlers:
-    - name: start puppet server
+    - name: Start Puppet Server
       systemd:
         name: puppetserver
         state: started
         enabled: yes
       ignore_errors: true
 
+- name: Install Puppet on Slaves
+  hosts: slave*
+  become: yes
+  gather_facts: false
+
+  tasks:
     - name: Install Puppet Agent and PHP on Slave
       yum:
         name: "{{ item }}"
