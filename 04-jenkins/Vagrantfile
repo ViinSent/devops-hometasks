@@ -1,0 +1,46 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/debian11"
+  config.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+
+  config.vm.synced_folder  ".", "/vagrant", disabled: false
+
+  config.vm.define "staging.vm" do |host|
+    host.vm.network "private_network", ip: "192.168.50.55"
+    host.vm.provider("virtualbox"){ |vb| vb.memory = 256 }
+  end
+
+  config.vm.define "production.vm" do |host|
+    host.vm.network "private_network", ip: "192.168.50.60"
+    host.vm.provider("virtualbox"){ |vb| vb.memory = 256 }
+  end
+
+  config.vm.define "nexus.vm" do |nexus|
+    nexus.vm.network "private_network", ip: "192.168.50.65"
+    nexus.vm.network "forwarded_port", guest: 8081, host: 8091
+
+    nexus.vm.provision "ansible_local" do |ansible|
+      ansible.inventory_path = "inventory"
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "nexus.yaml"
+      ansible.limit = "nexus"
+      ansible.become = true
+    end
+  end
+
+  config.vm.define "jenkins.vm" do |jenkins|
+    jenkins.vm.network "private_network", ip: "192.168.50.50"
+    jenkins.vm.provider("virtualbox"){ |vb| vb.memory = 1600 }
+    jenkins.vm.provider("virtualbox"){ |vb| vb.cpus = 2 }
+
+    jenkins.vm.provision "ansible_local" do |ansible|
+      ansible.inventory_path = "inventory"
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "jenkins.yaml"
+      ansible.limit = "jenkins"
+      ansible.become = true
+    end
+  end
+end

@@ -1,0 +1,74 @@
+---
+- name: Install and configure Jenkins
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - build-essential
+        - default-jre
+
+    - name: Add Jenkins GPG key
+      shell: curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/jenkins-keyring.gpg
+
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/"
+        state: present
+
+    - name: Update apt packages after adding Jenkins repository
+      apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Configure Jenkins directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+      loop:
+        - /var/lib/jenkins/init.groovy.d
+
+    - name: Copy Jenkins scripts
+      copy:
+        src: /vagrant/scripts/
+        dest: /var/lib/jenkins/init.groovy.d/
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+
+    - name: Update Jenkins service configuration
+      lineinfile:
+        path: /lib/systemd/system/jenkins.service
+        regexp: '^Environment="JAVA_OPTS=-Djava.awt.headless=true"'
+        line: 'Environment="JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
+
+    - name: Update Jenkins service timeout
+      lineinfile:
+        path: /lib/systemd/system/jenkins.service
+        regexp: '^#TimeoutStartSec=90'
+        line: 'TimeoutStartSec=180'
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Restart Jenkins service
+      service:
+        name: jenkins
+        state: restarted
