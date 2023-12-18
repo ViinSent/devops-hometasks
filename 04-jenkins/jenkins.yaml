@@ -33,6 +33,7 @@
       apt:
         name: jenkins
         state: present
+      ignore_errors: true
 
     - name: Configure Jenkins directories
       file:
@@ -58,11 +59,32 @@
         regexp: '^Environment="JAVA_OPTS=-Djava.awt.headless=true"'
         line: 'Environment="JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
 
+#    - name: Update Jenkins service configuration 2
+#      lineinfile:
+#        path: /lib/systemd/system/jenkins.service
+#        regexp: 'ExecStart=(.*)'
+#        line: 'ExecStart="JAVA_ARGS=-Dcasc.jenkins.config=${JENKINS_HOME}/casc_configs"'
+
+    - name: Set CASC_JENKINS_CONFIG
+      lineinfile:
+        dest: ~/.bashrc
+        line: 'export CASC_JENKINS_CONFIG=/var/lib/jenkins/casc_configs'
+        insertafter: EOF
+      become: yes
+
+    - name: Copy Jenkins config
+      copy:
+        src: /vagrant/templates/
+        dest: /var/lib/jenkins/casc_configs/
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+
     - name: Update Jenkins service timeout
       lineinfile:
         path: /lib/systemd/system/jenkins.service
         regexp: '^#TimeoutStartSec=90'
-        line: 'TimeoutStartSec=180'
+        line: 'TimeoutStartSec=270'
 
     - name: Reload systemd
       systemd:
