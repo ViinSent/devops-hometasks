@@ -1,5 +1,5 @@
-jenkins:
-  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+vars:
+  vars.yml
 
 unclassified:
   locale:
@@ -10,18 +10,18 @@ credentials:
   system:
     domainCredentials:
     - credentials:
-        - usernamePassword:
-            scope:    GLOBAL
-            id:       slave_creds
-            username: vagrant
-            password: vagrant
+      - usernamePassword:
+          scope:    GLOBAL
+          id:       slave_creds
+          username: ${GLOBAL_USER}
+          password: ${GLOBAL_PASS}
 
 tool:
   go:
     installations:
     - name: "go_lang"
       properties:
-        - installSource:
-            installers:
-            - golangInstaller:
-                id: "1.16"
+      - installSource:
+          installers:
+          - golangInstaller:
+              id: "1.16"

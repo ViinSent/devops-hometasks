@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
       ansible.inventory_path = "inventory"
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "jenkins.yaml"
-      ansible.limit = "jenkins"
+      ansible.limit = "all"
       ansible.become = true
     end
   end
