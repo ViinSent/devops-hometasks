@@ -26,7 +26,6 @@
     nexus_custom_jvm_settings: []
     nexus_anonymous_access: false
     nexus_default_admin_password: 'admin'
-    nexus_delete_default_repos: true
     nexus_default_port: 8081
     nexus_application_host: '{{ httpd_setup_enable | ternary("127.0.0.1", "0.0.0.0") }}'
     nexus_default_context_path: '/'
