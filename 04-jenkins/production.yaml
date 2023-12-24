@@ -1,0 +1,22 @@
+---
+- name: Install and configure production
+  hosts: production
+  become: yes
+  tasks:
+    - name: Copy system file
+      copy:
+        src: "{{ playbook_dir }}/templates/wordcloud.service"
+        dest: /etc/systemd/system/
+
+    - name: Create wordcloud directory
+      file:
+        state: directory
+        path: /opt/wordcloud/
+
+    - name: Change folder wordcloud owner
+      file:
+        path: /opt/wordcloud/
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0755'

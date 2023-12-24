@@ -1,6 +1,3 @@
-vars:
-  vars.yml
-
 unclassified:
   locale:
     systemLocale: en
@@ -13,8 +10,8 @@ credentials:
       - usernamePassword:
           scope:    GLOBAL
           id:       slave_creds
-          username: ${GLOBAL_USER}
-          password: ${GLOBAL_PASS}
+          username: vagrant
+          password: vagrant
 
 tool:
   go:
