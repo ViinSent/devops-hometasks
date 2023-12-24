@@ -46,7 +46,7 @@
         description: nx-uploader
         privileges:
           - nx-repository-view-raw-word-cloud-build-*
-        roles: [ ]
+        roles: []
     nexus_local_users:
       - username: nx-uploader
         first_name: uploader
