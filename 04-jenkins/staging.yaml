@@ -1,8 +1,15 @@
 ---
-- name: Install and configure staging
-  hosts: staging
+- name: Install and configure production
+  hosts: production
   become: yes
+  become_method: sudo
+
   tasks:
+    - name: Add user
+      user:
+        name: jenkins
+        password: "jenkins"
+
     - name: Copy system file
       copy:
         src: "{{ playbook_dir }}/templates/wordcloud.service"
