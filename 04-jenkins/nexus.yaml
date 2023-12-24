@@ -4,18 +4,19 @@
   become: yes
 
   tasks:
-  - name: Install Java
-    apt:
-      name: adoptopenjdk-8-hotspot
-      state: present
-
-  - name: Clone git repository with role
-    copy:
-      src: https://github.com/ansible-ThoTeam/nexus3-oss.git
-      args:
-        creates: /vagrant/roles/
+#  - name: Install Java
+#    apt:
+#      name: adoptopenjdk-8-hotspot
+#      state: present
+#
+#  - name: Clone git repository with role
+#    copy:
+#      src: https://github.com/ansible-ThoTeam/nexus3-oss.git
+#      args:
+#        creates: /vagrant/roles/
 
   roles:
+     - { role: java }
      - { role: nexus3-oss }
 
   vars:

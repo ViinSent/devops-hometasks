@@ -1,6 +1,6 @@
 ---
 - name: Install and configure production
-  hosts: production
+  hosts: staging
   become: yes
   become_method: sudo
 
