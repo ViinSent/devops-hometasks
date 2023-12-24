@@ -16,7 +16,7 @@
 #        creates: /vagrant/roles/
 
   roles:
-     - { role: java }
+#     - { role: java }
      - { role: nexus3-oss }
 
   vars:
