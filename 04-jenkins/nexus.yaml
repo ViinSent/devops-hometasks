@@ -29,6 +29,8 @@
     nexus_default_port: 8081
     nexus_application_host: '{{ httpd_setup_enable | ternary("127.0.0.1", "0.0.0.0") }}'
     nexus_default_context_path: '/'
+    nexus_config_maven: false
+    nexus_config_raw: true
     nexus_repos_raw_hosted:
       - name: word-cloud-build
         version_policy: release
