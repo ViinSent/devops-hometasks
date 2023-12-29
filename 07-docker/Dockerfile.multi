@@ -1,0 +1,20 @@
+# Dockerfile.multi - промежуточный образ
+FROM golang:1.16 as builder
+
+# Клонирование репозитория word-cloud-generator
+RUN git clone https://github.com/Fenikks/word-cloud-generator.git /go/src/app
+
+# Смена рабочей директории
+WORKDIR /go/src/app
+
+# Сборка приложения
+RUN make
+
+# Создание конечного образа
+FROM alpine:latest
+
+# Копирование исполняемого файла из промежуточного образа
+COPY --from=builder /go/src/app/word-cloud-generator /usr/local/bin/
+
+# Команда по умолчанию для запуска приложения
+CMD ["word-cloud-generator"]

@@ -1,0 +1,14 @@
+# Dockerfile.simple
+FROM debian:latest
+
+# Установка Apache
+RUN apt-get update && apt-get install -y apache2 php
+
+# Копирование файлов сайта
+COPY ./index.php /var/www/html
+
+# Экспозиция порта 80
+EXPOSE 80
+
+# Команда для запуска Apache при старте контейнера
+CMD ["apache2ctl", "-D", "FOREGROUND"]
