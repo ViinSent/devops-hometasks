@@ -13,11 +13,12 @@ Vagrant.configure("2") do |config|
   end
   # Установка Docker
   config.vm.provision "shell", inline: <<-SHELL
-
     apt-get update
     apt-get install -y docker.io
     usermod -aG docker vagrant
     sudo systemctl enable docker
     sudo systemctl start docker
+    cp -r /vagrant/simple /home/vagrant/simple
+    cp -r /vagrant/multi /home/vagrant/multi
   SHELL
 end

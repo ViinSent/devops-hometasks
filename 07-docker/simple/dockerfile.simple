@@ -1,0 +1,27 @@
+# dockerfile.simple
+FROM debian:latest
+
+# Установка Apache
+RUN apt-get update && apt-get install -y apache2 php
+
+# Копирование файлов сайта
+COPY ./index.php /var/www/html
+
+# Копирование файлов сайта
+COPY ./index.html /var/www/html
+
+# Устанавливаем ServerName в конфигурационном файле Apache2
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Настраиваем php.conf
+RUN echo "<VirtualHost *:81>|
+DirectoryIndex index.php" >> /etc/apache2/sites-available/php.conf
+
+# Настраиваем html.conf
+RUN echo "DirectoryIndex index.html" >>/etc/apache2/sites-available/000-default.conf
+
+# Экспозиция порта 80
+EXPOSE 80
+
+# Команда для запуска Apache при старте контейнера
+CMD ["apache2ctl"]
