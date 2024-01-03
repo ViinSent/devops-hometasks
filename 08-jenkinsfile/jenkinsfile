@@ -1,0 +1,86 @@
+pipeline {
+    agent any
+
+    environment {
+        NEXUS_URL = 'http://192.168.33.90/nexus'
+        NEXUS_CREDS_ID = 'nexus-creds'
+        STAGING_SERVER = '192.168.33.80'
+        PRODUCTION_SERVER = '192.168.33.85'
+        USERNAME = 'your_username'
+        PASSWORD = 'your_password'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/wickett/word-cloud-generator.git'
+            }
+        }
+        stage('Build code') {
+            agent {
+                label 'go'
+            }
+            steps {
+                sh '''sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
+                      GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator -v
+                      gzip -f ./artifacts/word-cloud-generator
+                   '''
+            }
+        }
+        stage('Code Review and Tests') {
+            steps {
+                script {
+                    sh 'make lint'
+                    sh 'make test'
+                }
+            }
+        }
+
+        stage('Build and Upload to Nexus') {
+            steps {
+                script {
+                    // Your build and upload logic here
+                    // Use NEXUS_URL and NEXUS_CREDS_ID variables
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    // Your staging deployment logic here
+                    // Use STAGING_SERVER, USERNAME, and PASSWORD variables
+                    // Start integration tests in parallel
+                    parallel (
+                        "Thread1": {
+                            // Integration test logic for thread 1
+                        },
+                        "Thread2": {
+                            // Integration test logic for thread 2
+                        }
+                    )
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                expression {
+                    currentBuild.resultIsBetterOrEqualTo('SUCCESS')
+                }
+            }
+            steps {
+                script {
+                    // Your production deployment logic here
+                    // Use PRODUCTION_SERVER, USERNAME, and PASSWORD variables
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup or post-build steps
+        }
+    }
+}
