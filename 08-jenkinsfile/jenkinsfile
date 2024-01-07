@@ -53,7 +53,7 @@ pipeline {
             steps{
 
                 withCredentials([usernameColonPassword(credentialsId: 'vagrant_staging', variable: 'PASSWORD')]) {
-                    sh """ssh vagrant@$STAGING_SERVER -yes\\
+                    sh """ssh vagrant@$STAGING_SERVER \\
                     'sudo service wordcloud stop && \\
                     curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz \\
                     -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW && \\
