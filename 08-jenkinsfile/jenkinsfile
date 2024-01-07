@@ -59,15 +59,17 @@ pipeline {
 
         stage('Test building'){
             steps{
-                sh """  RESULT = 'curl -s http://$STAGING_SERVER:8888/version | jq -r '.version''
-                        if [ "1.$BUILD_NUMBER" != "$RESULT" ]; then
-                          exit 99
-                        fi
-
-                        RES = 'curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_SERVER:8888/api | jq ". | length"'
-                        if [ "7" != "$RES" ]; then
-                          exit 99
-                        fi"""
+                script {
+                    def result = sh(script: "curl -s http://${STAGING_SERVER}:8888/version | jq -r '.version'", returnStatus: true).trim()
+                    if ("1.${BUILD_NUMBER}" != result) {
+                        error "Version check failed"
+                    }
+    
+                    def postData = '{"text":"this is a really really really important thing this is"}'
+                    def res = sh(script: "curl -s -H 'Content-Type: application/json' -d '${postData}' http://${STAGING_SERVER}:8888/api | jq '. | length'", returnStatus: true).trim()
+                    if ("7" != res) {
+                        error "API response check failed"
+                }
             }
 
         }
