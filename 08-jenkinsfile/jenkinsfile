@@ -60,7 +60,7 @@ pipeline {
                 }
                 stage('Test version'){
                     steps{
-                        sleep 10
+                        sleep 20
                         echo 'Test pass'
                         sh ''' res=`curl -s http://$STAGING_SERVER:8888/version | jq -r '.version'`
                             if [ "1.$BUILD_NUMBER" != "$res" ]; then
