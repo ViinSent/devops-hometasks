@@ -36,7 +36,7 @@ pipeline {
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     nexusUrl: NEXUS_URL,
-                    groupId: 'pipline',
+                    groupId: 'pipeline',
                     version: '1.$BUILD_NUMBER',
                     repository: 'word-cloud-build',
                     credentialsId: NEXUS_CREDS_ID,
