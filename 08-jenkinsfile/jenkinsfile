@@ -52,8 +52,8 @@ pipeline {
         stage('Remote SSH'){
             steps{
                 sh """  sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no vagrant@$STAGING_SERVER 'sudo service wordcloud stop'
-                        ssh vagrant@$STAGING_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
-                        ssh vagrant@$STAGING_SERVER 'gunzip -f /opt/wordcloud/word-cloud-generator.gz && chmod +x /opt/wordcloud/word-cloud-generator && sudo service wordcloud start' """
+                        sshpass -p ${PASSWORD} ssh vagrant@$STAGING_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
+                        sshpass -p ${PASSWORD} ssh vagrant@$STAGING_SERVER 'gunzip -f /opt/wordcloud/word-cloud-generator.gz && chmod +x /opt/wordcloud/word-cloud-generator && sudo service wordcloud start' """
             }
         }
 
