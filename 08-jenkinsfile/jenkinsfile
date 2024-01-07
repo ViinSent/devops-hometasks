@@ -6,7 +6,7 @@ pipeline {
         NEXUS_CREDS_USR = 'nx-uploader'
         NEXUS_CREDS_PSW = 'nx-uploader'
         STAGING_SERVER = '192.168.50.55'
-        PRODUCTION_SERVER = '192.168.50.60:8888'
+        PRODUCTION_SERVER = '192.168.50.60'
         USERNAME = 'vagrant'
         PASSWORD = 'vagrant'
         GOLANG = 'go_lang'
@@ -49,7 +49,7 @@ pipeline {
                 )
             }
         }
-        stage('Remote SSH'){
+        stage('Add to staging'){
             steps{
                 sh """  sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no vagrant@$STAGING_SERVER 'sudo service wordcloud stop'
                         sshpass -p ${PASSWORD} ssh vagrant@$STAGING_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
@@ -57,5 +57,27 @@ pipeline {
             }
         }
 
+        stage('Test building'){
+            steps{
+                sh """  res=`curl -s http://$STAGING_SERVER:8888/version | jq -r '.version'`
+                        if [ "1.$BUILD_NUMBER" != "$res" ]; then
+                            exit 99
+                        fi
+
+                        res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_SERVER:8888/api | jq '. | length'`
+                        if [ "7" != "$res" ]; then
+                          exit 99
+                        fi
+                """
+            }
+
+        }
+        stage('Add to production'){
+            steps{
+                sh """  sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no vagrant@$PRODUCTION_SERVER 'sudo service wordcloud stop'
+                        sshpass -p ${PASSWORD} ssh vagrant@$PRODUCTION_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
+                        sshpass -p ${PASSWORD} ssh vagrant@$PRODUCTION_SERVER 'gunzip -f /opt/wordcloud/word-cloud-generator.gz && chmod +x /opt/wordcloud/word-cloud-generator && sudo service wordcloud start' """
+            }
+        }
     }
 }
