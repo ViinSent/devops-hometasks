@@ -1,12 +1,12 @@
 pipeline {
     agent any
     environment {
-        NEXUS_URL = '192.168.50.65:8081/'
+        NEXUS_URL = '192.168.50.65:8081'
         NEXUS_CREDS_ID = 'nx-uploader'
         NEXUS_CREDS_USR = 'nx-uploader'
         NEXUS_CREDS_PSW = 'nx-uploader'
         STAGING_SERVER = '192.168.50.55'
-        PRODUCTION_SERVER = '192.168.50.60:8888'
+        PRODUCTION_SERVER = '192.168.50.60'
         USERNAME = 'vagrant'
         PASSWORD = 'vagrant'
         GOLANG = 'go_lang'
@@ -36,7 +36,7 @@ pipeline {
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     nexusUrl: NEXUS_URL,
-                    groupId: 'pipline',
+                    groupId: 'pipeline',
                     version: '1.$BUILD_NUMBER',
                     repository: 'word-cloud-build',
                     credentialsId: NEXUS_CREDS_ID,
@@ -49,75 +49,39 @@ pipeline {
                 )
             }
         }
-        stage('Remote SSH'){
+        stage('Parallel tasks'){
+            parallel{
+                stage('Add to staging'){
+                    steps{
+                        sh """  sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no vagrant@$STAGING_SERVER 'sudo service wordcloud stop'
+                                sshpass -p ${PASSWORD} ssh vagrant@$STAGING_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
+                                sshpass -p ${PASSWORD} ssh vagrant@$STAGING_SERVER 'gunzip -f /opt/wordcloud/word-cloud-generator.gz && chmod +x /opt/wordcloud/word-cloud-generator && sudo service wordcloud start' """
+                    }
+                }
+                stage('Test version'){
+                    steps{
+                        sleep 10
+                        echo 'Test pass'
+                        sh ''' res=`curl -s http://$STAGING_SERVER:8888/version | jq -r '.version'`
+                            if [ "1.$BUILD_NUMBER" != "$res" ]; then
+                              exit 99
+                            fi
+
+                            res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_SERVER:8888/api | jq '. | length'`
+                            if [ "7" != "$res" ]; then
+                              exit 99
+                            fi
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Add to production'){
             steps{
-
-                withCredentials([usernameColonPassword(credentialsId: 'vagrant_staging', variable: 'PASSWORD')]) {
-                    sh """ssh vagrant@$STAGING_SERVER \\
-                    'sudo service wordcloud stop && \\
-                    curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz \\
-                    -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW && \\
-                    gunzip -f /opt/wordcloud/word-cloud-generator.gz && \\
-                    chmod +x /opt/wordcloud/word-cloud-generator && \\
-                    sudo service wordcloud start' """
-                }
+                sh """  sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no vagrant@$PRODUCTION_SERVER 'sudo service wordcloud stop'
+                        sshpass -p ${PASSWORD} ssh vagrant@$PRODUCTION_SERVER 'curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW'
+                        sshpass -p ${PASSWORD} ssh vagrant@$PRODUCTION_SERVER 'gunzip -f /opt/wordcloud/word-cloud-generator.gz && chmod +x /opt/wordcloud/word-cloud-generator && sudo service wordcloud start' """
             }
-        }
-
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-        stage('Code Review and Tests') {
-            steps {
-                script {
-                    sh 'make lint'
-                    sh 'make test'
-                }
-            }
-        }
-
-
-        stage('Deploy to Staging') {
-            steps {
-                script {
-                    // Your staging deployment logic here
-                    // Use STAGING_SERVER, USERNAME, and PASSWORD variables
-                    // Start integration tests in parallel
-                    parallel (
-                        "Thread1": {
-                            // Integration test logic for thread 1
-                        },
-                        "Thread2": {
-                            // Integration test logic for thread 2
-                        }
-                    )
-                }
-            }
-        }
-
-        stage('Deploy to Production') {
-            when {
-                expression {
-                    currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            // Cleanup or post-build steps
         }
     }
 }
