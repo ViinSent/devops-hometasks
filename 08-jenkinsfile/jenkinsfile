@@ -60,12 +60,12 @@ pipeline {
         stage('Test building'){
             steps{
                 sh """  res=`curl -s http://$STAGING_SERVER:8888/version | jq -r '.version'`
-                        if [ "1.$BUILD_NUMBER" != "$res" ]; then
+                        if [ "1.$BUILD_NUMBER" != "res" ]; then
                           exit 99
                         fi
 
                         res=`curl -s -H "Content-Type: application/json" -d '{"text":"ths is a really really really important thing this is"}' http://$STAGING_SERVER:8888/api | jq '. | length'`
-                        if [ "7" != "$res" ]; then
+                        if [ "7" != "res" ]; then
                           exit 99
                         fi"""
             }
