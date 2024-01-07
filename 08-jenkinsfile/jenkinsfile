@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        NEXUS_URL = '192.168.50.65:8081/'
+        NEXUS_URL = '192.168.50.65:8081'
         NEXUS_CREDS_ID = 'nx-uploader'
         NEXUS_CREDS_USR = 'nx-uploader'
         NEXUS_CREDS_PSW = 'nx-uploader'
