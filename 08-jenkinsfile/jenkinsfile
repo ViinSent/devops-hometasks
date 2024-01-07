@@ -1,12 +1,12 @@
 pipeline {
     agent any
     environment {
-        NEXUS_URL = '192.168.50.65:8081'
+        NEXUS_URL = '192.168.33.90:8081'
         NEXUS_CREDS_ID = 'nx-uploader'
         NEXUS_CREDS_USR = 'nx-uploader'
         NEXUS_CREDS_PSW = 'nx-uploader'
-        STAGING_SERVER = '192.168.50.55'
-        PRODUCTION_SERVER = '192.168.50.60'
+        STAGING_SERVER = '192.168.33.80'
+        PRODUCTION_SERVER = '192.168.33.85'
         USERNAME = 'vagrant'
         PASSWORD = 'vagrant'
         GOLANG = 'go_lang'
