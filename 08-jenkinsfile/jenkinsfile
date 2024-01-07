@@ -1,13 +1,19 @@
 pipeline {
     agent any
-
     environment {
-        NEXUS_URL = 'http://192.168.33.90/nexus'
-        NEXUS_CREDS_ID = 'nexus-creds'
-        STAGING_SERVER = '192.168.33.80'
-        PRODUCTION_SERVER = '192.168.33.85'
-        USERNAME = 'your_username'
-        PASSWORD = 'your_password'
+        NEXUS_URL = '192.168.50.65:8081/'
+        NEXUS_CREDS_ID = 'nx-uploader'
+        NEXUS_CREDS_USR = 'nx-uploader'
+        NEXUS_CREDS_PSW = 'nx-uploader'
+        STAGING_SERVER = '192.168.50.55'
+        PRODUCTION_SERVER = '192.168.50.60:8888'
+        USERNAME = 'vagrant'
+        PASSWORD = 'vagrant'
+        GOLANG = 'go_lang'
+    }
+
+    tools {
+        go GOLANG
     }
 
     stages {
@@ -17,9 +23,6 @@ pipeline {
             }
         }
         stage('Build code') {
-            agent {
-                label 'go'
-            }
             steps {
                 sh '''sed -i "s/1.DEVELOPMENT/1.$BUILD_NUMBER/g" static/version
                       GOOS=linux GOARCH=amd64 go build -o ./artifacts/word-cloud-generator -v
@@ -27,6 +30,54 @@ pipeline {
                    '''
             }
         }
+        stage('Nexus build'){
+            steps{
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: NEXUS_URL,
+                    groupId: 'pipline',
+                    version: '1.$BUILD_NUMBER',
+                    repository: 'word-cloud-build',
+                    credentialsId: NEXUS_CREDS_ID,
+                    artifacts: [
+                        [artifactId: 'word-cloud',
+                         classifier: '',
+                         file: './artifacts/word-cloud-generator.gz',
+                         type: 'gz']
+                    ]
+                )
+            }
+        }
+        stage('Remote SSH'){
+            steps{
+
+                withCredentials([usernameColonPassword(credentialsId: 'vagrant_staging', variable: 'PASSWORD')]) {
+                    sh """ssh vagrant@$STAGING_SERVER \\
+                    'sudo service wordcloud stop && \\
+                    curl -X GET $NEXUS_URL/repository/word-cloud-build/pipeline/word-cloud/1.$BUILD_NUMBER/word-cloud-1.${BUILD_NUMBER}.gz \\
+                    -o /opt/wordcloud/word-cloud-generator.gz -u $NEXUS_CREDS_USR:$NEXUS_CREDS_PSW && \\
+                    gunzip -f /opt/wordcloud/word-cloud-generator.gz && \\
+                    chmod +x /opt/wordcloud/word-cloud-generator && \\
+                    sudo service wordcloud start' """
+                }
+            }
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
         stage('Code Review and Tests') {
             steps {
                 script {
@@ -36,14 +87,6 @@ pipeline {
             }
         }
 
-        stage('Build and Upload to Nexus') {
-            steps {
-                script {
-                    // Your build and upload logic here
-                    // Use NEXUS_URL and NEXUS_CREDS_ID variables
-                }
-            }
-        }
 
         stage('Deploy to Staging') {
             steps {
@@ -67,12 +110,6 @@ pipeline {
             when {
                 expression {
                     currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-                }
-            }
-            steps {
-                script {
-                    // Your production deployment logic here
-                    // Use PRODUCTION_SERVER, USERNAME, and PASSWORD variables
                 }
             }
         }
