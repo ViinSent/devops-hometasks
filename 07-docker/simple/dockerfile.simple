@@ -7,9 +7,6 @@ RUN apt-get update && apt-get install -y apache2 php
 # Копирование файлов сайта
 COPY ./index.php /var/www/html
 
-# Копирование файлов сайта
-COPY ./index.html /var/www/html
-
 # Устанавливаем ServerName в конфигурационном файле Apache2
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Сборка Docker-образа с именем hometask-image
-docker build -t hometask-image -f dockerfile.simple .
+docker run -d -ti -p 8081:80 --name static-site hometask-image
+docker cp ./index.html static-site:/var/www/html
 
-# Запуск контейнера с пробросом порта 80 на порт 8081 хост-системы
-docker run -p 8081:80 hometask-image
+#docker run -dit --rm -p 8081:80 -v 'pwd'/index.html:/var/www/html/index.html hometask-image:solution
