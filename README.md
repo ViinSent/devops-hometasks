@@ -9,4 +9,6 @@ Slave1 (http://192.168.50.20) Slave2 (http://192.168.50.30)
 - ДЗ №5-6 Создание машин Jenkins (http://192.168.50.50:8080), Nexus (http://192.168.50.65:8081), 
 stage (http://192.168.50.55:8888), production (http://192.168.50.60:8888), настройка и запуск WCG
 - ДЗ №7 Создание Docker-образов dynamic_site (http://192.168.50.70), static_site (http://192.168.50.75)
-    
+- ДЗ №8 Создан Jenkinsfile в котором написан pipeline сборки, тестирования и запуска WCG на STAGING 
+и PRODUCTION серверах через NEXUS
+- ДЗ №9 Создан Docker-compose два образа Jenkins через Dockerfile и Nexus - Dockerfile, Ansible-role    
