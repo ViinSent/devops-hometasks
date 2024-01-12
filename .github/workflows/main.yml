@@ -9,6 +9,16 @@ jobs:
     steps:
       - name: test step
         run: echo 'Hello World'
+
+      - name: checout code
+        uses: actions/checkout@v4
+        with: 
+          repository: ViinSent/word-cloud-generator
+
+      - name: test
+        run: |
+          echo curend dir is 'pwd'
+          ls la
         
     
     
