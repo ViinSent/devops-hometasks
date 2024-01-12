@@ -1,0 +1,15 @@
+name: Word Cloud Generator
+on: 
+  push:
+  workflow_dispatch: 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: test step
+        run: echo 'Hello World'
+        
+    
+    
+
