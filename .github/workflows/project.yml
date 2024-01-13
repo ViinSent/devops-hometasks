@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
     
       - name: Build the Docker image
-        run: docker build -t ${{ env.IMAGE_NAME }} -f ${{ github.repository_owner }}/devops-hometask/Dockerfile .
+        run: docker build -t ${{ env.IMAGE_NAME }} -f ${{ github.repository_owner }}/devops-hometasks/Dockerfile .
              
       - name: Tag & publish to GitHub Container Registry
         run: |
