@@ -14,19 +14,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: set lower case owner name
-        run: |
-          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
-        env:
-          OWNER: '${{ github.repository_owner }}'
+        run: echo ::set-env name=IMAGE_REPOSITORY::$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Build Docker image
-        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository_owner }}/wcg:latest -t ghcr.io/${{ github.repository_owner }}/wcg:${{ github.sha }} -f Dockerfile.multi . --push
+        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ env.IMAGE_REPOSITORY }}/wcg:latest -t ghcr.io/${{ env.IMAGE_REPOSITORY }}/wcg:${{ github.sha }} -f Dockerfile.multi . --push
 
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.ACTION_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+        run: echo "${{ secrets.ACTION_TOKEN }}" | docker login ghcr.io -u ${{ env.IMAGE_REPOSITORY }} --password-stdin
 
       - name: Push Docker image
-        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository_owner }}/wcg:latest -t ghcr.io/${{ github.repository_owner }}/wcg:${{ github.sha }} -f Dockerfile.multi . --push
+        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ env.IMAGE_REPOSITORY }}/wcg:latest -t ghcr.io/${{ env.IMAGE_REPOSITORY }}/wcg:${{ github.sha }} -f Dockerfile.multi . --push
