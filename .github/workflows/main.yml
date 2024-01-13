@@ -5,6 +5,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: golang:1.16  
 
     steps:
       - name: test step
@@ -15,9 +17,9 @@ jobs:
         with: 
           repository: ViinSent/word-cloud-generator
 
-      - name: test
+      - name: build wcg
         run: |
-          echo curend dir is 'pwd'
+          make
           ls -la
         
     
