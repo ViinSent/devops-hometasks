@@ -9,6 +9,6 @@ CMD /wcg/artefacts/linux/word-cloud-generator
 
 FROM alpine:latest
 RUN apk add gcompat
-COPE --from=0 /wcg/artefacts/linux/word-cloud-generator .
+COPY --from=0 /wcg/artefacts/linux/word-cloud-generator .
 
 CMD /word-cloud-generator
