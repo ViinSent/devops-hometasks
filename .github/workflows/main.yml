@@ -23,7 +23,7 @@ jobs:
           ls -la
 
       - name: Archive code coverge result
-        uses: actions/upload-artefact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: wcg_linux
           path: artefacts/linux/*
