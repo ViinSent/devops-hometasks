@@ -21,6 +21,26 @@ jobs:
         run: |
           make
           ls -la
+
+      - name: Archive code coverge result
+        uses: actions/checkout@v3
+        with:
+          name: wcg_linux
+          path: artefacts/linux/
+    
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: wcg_linux
+
+      - name: test
+        run: ls -la
+
+    
         
     
     
