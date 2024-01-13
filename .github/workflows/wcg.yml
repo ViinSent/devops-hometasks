@@ -1,0 +1,26 @@
+name: Docker Build & Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository_owner }}/wcg:latest -t ghcr.io/${{ github.repository_owner }}/wcg:${{ github.sha }} -f Dockerfile.multi .
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.ACTION_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Push Docker image
+        run: docker buildx create --use && docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository_owner }}/wcg:latest -t ghcr.io/${{ github.repository_owner }}/wcg:${{ github.sha }} -f Dockerfile.multi . --push
