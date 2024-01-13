@@ -14,8 +14,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: set lower case owner name
-        run: echo "::set-env name=IMAGE_REPOSITORY::`$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')`"
-
+        run: echo IMAGE_REPOSITORY=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
