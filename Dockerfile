@@ -34,7 +34,7 @@ RUN export PATH="$/opt/word-cloud-generator:#PATH"
 WORKDIR /opt/word-cloud-generator
 
 # Добавление характеристик к директории
-RUN chmod +x word-cloud-generator
+RUN chmod +x /opt/word-cloud-generator
 
 # Команда для запуска приложения
 CMD ["/word-cloud-generator"]
