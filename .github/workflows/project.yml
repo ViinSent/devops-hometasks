@@ -27,3 +27,4 @@ jobs:
           VERSION=latest
           docker tag ${{ env.IMAGE_NAME }} $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+ 
