@@ -23,10 +23,10 @@ jobs:
           ls -la
 
       - name: Archive code coverge result
-        uses: actions/checkout@v3
+        uses: actions/upload-artefact@v3
         with:
           name: wcg_linux
-          path: ./artefacts/linux/
+          path: artefacts/linux/*
     
   upload:
     runs-on: ubuntu-latest
