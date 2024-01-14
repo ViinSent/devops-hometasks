@@ -36,6 +36,6 @@ jobs:
         run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
         
       
-      # - name: Tag & publish to GitHub Container Registry
-      #   run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Tag & publish to GitHub Container Registry
+        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
  
