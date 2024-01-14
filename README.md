@@ -11,4 +11,5 @@ stage (http://192.168.50.55:8888), production (http://192.168.50.60:8888), на�
 - ДЗ №7 Создание Docker-образов dynamic_site (http://192.168.50.70), static_site (http://192.168.50.75)
 - ДЗ №8 Создан Jenkinsfile в котором написан pipeline сборки, тестирования и запуска WCG на STAGING 
 и PRODUCTION серверах через NEXUS
-- ДЗ №9 Создан Docker-compose два образа Jenkins через Dockerfile и Nexus - Dockerfile, Ansible-role    
+- ДЗ №9 Создан Docker-compose два образа Jenkins через Dockerfile и Nexus - Dockerfile, Ansible-role
+- ДЗ №10 Создан .github/workflows/project.yaml, который используя Dockerfile (в корне) создает образ и загружает его в GitHub registry (ghcr.io)
