@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y make
 RUN mkdir /go/src/word-cloud-generator
 
 # Клонирование репозитория word-cloud-generator
-RUN git clone https://github.com/Fenikks/word-cloud-generator.git /go/src/word-cloud-generator
+RUN git clone https://github.com/ViinSent/word-cloud-generator.git /go/src/word-cloud-generator
 
 # Смена рабочей директории
 WORKDIR /go/src/word-cloud-generator
