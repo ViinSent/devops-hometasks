@@ -1,6 +1,8 @@
 name: WCG from docker
 
-on: [push]
+on: 
+  push:
+  workflow_dispatch: 
 
 env:
   IMAGE_NAME: wcg
@@ -31,14 +33,9 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
-
-      - name: test
-        run: docker images
-
-      - name: test
-        run: docker container ls -a
-        
+        run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -f Dockerfile . --push
+        # -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      
       - name: Tag & publish to GitHub Container Registry
         run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
  
