@@ -32,10 +32,7 @@ jobs:
 
       - name: Build Docker image
         run: docker buildx create --use && docker buildx build -t ghcr.io/${{ env.IMAGE_REPOSITORY }}/wcg:latest -f Dockerfile . --push
-    
-      - name: Build the Docker image
-        run: docker build -t ${{ env.IMAGE_NAME }} -f /Dockerfile .
-             
+              
       - name: Tag & publish to GitHub Container Registry
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
