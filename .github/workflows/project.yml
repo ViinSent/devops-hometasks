@@ -40,9 +40,5 @@ jobs:
         run: docker container ls -a
         
       - name: Tag & publish to GitHub Container Registry
-        run: |
-          IMAGE_ID=${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}
-          VERSION=latest
-          docker tag ${{ env.IMAGE_NAME }} $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
  
