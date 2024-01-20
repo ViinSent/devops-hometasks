@@ -8,5 +8,6 @@ RUN mkdir /wcg; \
 FROM alpine:latest
 RUN apk add bash libc6-compat
 COPY --from=build /wcg/artifacts/linux/word-cloud-generator .
+EXPOSE 8888
 
 CMD /word-cloud-generator
