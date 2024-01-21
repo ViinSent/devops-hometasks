@@ -42,17 +42,17 @@ CMD ["/word-cloud-generator"]
 
 
 
-#FROM golang:1.16
+FROM golang:1.16 as build
 
-#RUN mkdir /wcg; \
-#    cd /wcg; \
-#    git clone https://github.com/Fenikks/word-cloud-generator.git .; \
-#    make
+RUN mkdir /wcg; \
+    cd /wcg; \
+    git clone https://github.com/Fenikks/word-cloud-generator.git .; \
+    make
 
-#CMD /wcg/artefacts/linux/word-cloud-generator
+CMD /wcg/artifacts/linux/word-cloud-generator
 
-#FROM alpine:latest
-#RUN apk add gcompat
-#COPY --from=0 /wcg/artefacts/linux/word-cloud-generator .
+FROM alpine:latest
+RUN apk add bash libc6-compat
+COPY --from=build /wcg/artifacts/linux/word-cloud-generator .
 
-#CMD /word-cloud-generator
+CMD /word-cloud-generator
