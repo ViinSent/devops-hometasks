@@ -6,7 +6,6 @@ resource "github_repository_file" "file" {
   branch     = "main"
   file       = "13-terraform/${each.value}"
   content    = file("${path.module}/${each.value}")
-  #  content    = "new files"
 
   commit_message      = "Managed by Terraform"
   commit_author       = "Terraform User"
