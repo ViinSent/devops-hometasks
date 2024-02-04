@@ -6,7 +6,7 @@ metadata:
 #    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: word-cloud-generator.test.local
+  - host: word-cloud-generator.test.pc
     http:
       paths:
       - path: /
