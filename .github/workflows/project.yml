@@ -28,6 +28,8 @@ jobs:
 
       - name: Create Git tag
         run: |
+          git config --global user.email "viinsent@gmail.com"
+          git config --global user.name "ViinSent"
           echo TAG_NAME= "v.1.0" >> $GITHUB_ENV
           git tag -a v.1.0 -m "Tagging new version"
       
