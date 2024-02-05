@@ -18,10 +18,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: test
+      - name: Test
         run: ls -la
 
-      - name: set lower case owner name
+      - name: Set lower case owner name
         run: echo IMAGE_REPOSITORY=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
@@ -57,13 +57,11 @@ jobs:
       - name: Package Helm chart
         run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
 
-      - name: Update Helm repository index
-        run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
+      # - name: Update Helm repository index
+      #   run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
         
       - name: Create tag for main branch
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        run: |
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:tag_version
+        run: docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }}
 
       # - name: Deploy Helm chart with Argo CD
       #   run: |
