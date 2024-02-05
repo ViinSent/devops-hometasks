@@ -28,7 +28,7 @@ jobs:
         run: |
           git config --global user.email "viinsent@gmail.com"
           git config --global user.name ${{ github.actor }}
-          echo TAG_NAME= "v.1.0" >> $GITHUB_ENV
+          echo TAG_NAME="v.1.0" >> $GITHUB_ENV
           git tag -a v.1.0 -m "Tagging new version"
       
       - name: Log into registry ${{ env.REGISTRY }}
