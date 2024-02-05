@@ -56,7 +56,7 @@ jobs:
 
       - name: Update Chart Version
         run: |
-          sed -i 's/version: [0-9]*\.[0-9]*\.[0-9]*/version: ${{ steps.tag_version.outputs.new_tag }}/' 12-helm/Chart.yaml
+          sed -i 's/version: v[0-9]*\.[0-9]*\.[0-9]*/version: ${{ steps.tag_version.outputs.new_tag }}/' 12-helm/Chart.yaml
           # Commit the changes
           git config --local user.email "viinsent@gmail.com"
           git config --local user.name ${{ github.actor }}
