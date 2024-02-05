@@ -34,7 +34,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          name: ${{ env.IMAGE_NAME }} ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
       
       - name: Log into registry ${{ env.REGISTRY }}
@@ -54,6 +54,10 @@ jobs:
       - name: Helm lint
         run: helm lint ${{ env.HELM_REPO }}
 
+      - name: Modify Chart
+        run: |
+          sed -i 's/version: 0.0.3/version: ${{ steps.tag_version.outputs.new_tag }}/g' path/to/your/file
+    
       - name: Package Helm chart
         run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
 
