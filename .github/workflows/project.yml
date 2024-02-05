@@ -63,7 +63,7 @@ jobs:
       - name: Create tag for main branch
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:tag_version
 
       # - name: Deploy Helm chart with Argo CD
       #   run: |
