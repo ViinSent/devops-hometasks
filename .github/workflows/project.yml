@@ -56,7 +56,7 @@ jobs:
 
       - name: Modify Chart
         run: |
-          sed -i 's/version: 0.0.3/version: ${{ steps.tag_version.outputs.new_tag }}/g' ${{ HELM_REPO }}/Chart.yaml
+          sed -i 's/version: 0.0.3/version: ${{ steps.tag_version.outputs.new_tag }}/g' ${{ env.HELM_REPO }}/Chart.yaml
     
       - name: Package Helm chart
         run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
