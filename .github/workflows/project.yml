@@ -54,27 +54,13 @@ jobs:
       - name: Helm lint
         run: helm lint ${{ env.HELM_REPO }}
 
-      - name: Modify Chart
+      - name: Update Chart Version
         run: |
-          sed -i 's/version: ${{ steps.tag_version.outputs.tag }}/version: ${{ steps.tag_version.outputs.new_tag }}/g' ${{ env.HELM_REPO }}/Chart.yaml
-    
-      # - name: Package Helm chart
-      #   run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
+          sed -i 's/version: [0-9]*\.[0-9]*\.[0-9]*/version: ${{ steps.tag_version.outputs.new_tag }}/' 12-helm/Chart.yaml
+          # Commit the changes
+          git config --local user.email "viinsent@gmail.com"
+          git config --local user.name ${{ github.actor }}
+          git add 12-helm/Chart.yaml
+          git commit -m "Update Chart version"
+          git push
 
-      # - name: Update Helm repository index
-      #   run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
-
-      # - name: Deploy Helm chart with Argo CD
-      #   run: |
-      #     argocd login <ARGOCD_SERVER> --username <USERNAME> --password <PASSWORD>
-      #     argocd app create <APP_NAME> --repo <HELM_REPO_URL> --path <CHART_PATH> --dest-namespace <NAMESPACE> --dest-server https://kubernetes.default.svc --sync-policy auto
-      #     argocd app set <APP_NAME> --values path/to/values.yaml
-      #     argocd app sync <APP_NAME>
-      #   env:
-      #     ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
-      #     USERNAME: ${{ secrets.ARGOCD_USERNAME }}
-      #     PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
-      #     APP_NAME: your-app-name
-      #     HELM_REPO_URL: https://your-helm-repo-url.com
-      #     CHART_PATH: path/to/your/chart
-      #     NAMESPACE: your-namespace
