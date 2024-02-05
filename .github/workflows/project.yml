@@ -11,7 +11,7 @@ env:
   CHART_NAME: "wcg"
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,13 +37,18 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.ACTION_TOKEN }}
-
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
         run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
-   
+  helm:
+    runs-on: ubuntu-latest
+    steps:
       - name: Helm lint
         run: helm lint ${{ env.HELM_REPO }}
 
@@ -56,16 +61,7 @@ jobs:
       - name: Create tag for main branch
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          docker tag ${{ env.TAG_NAME }}:latest ${{ env.TAG_NAME }}:main
-
-      # - name: Helm lint
-      #   run: helm lint path/to/your/chart
-
-      # - name: Package Helm chart
-      #   run: helm package path/to/your/chart -d ./helm-package
-
-      # - name: Update Helm repository index
-      #   run: helm repo index ./helm-package --url https://your-helm-repo-url.com
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
 
       # - name: Deploy Helm chart with Argo CD
       #   run: |
