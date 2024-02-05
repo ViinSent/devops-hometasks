@@ -9,8 +9,6 @@ env:
   REGISTRY: "ghcr.io"
   HELM_REPO: "12-helm"
   CHART_NAME: "wcg"
-  # IMAGE_REPOSITORY: "$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
-  # TAG_NAME: "${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}"
 
 jobs:
   build:
@@ -29,7 +27,7 @@ jobs:
       - name: Create Git tag
         run: |
           git config --global user.email "viinsent@gmail.com"
-          git config --global user.name "ViinSent"
+          git config --global user.name ${{ github.actor }}
           echo TAG_NAME= "v.1.0" >> $GITHUB_ENV
           git tag -a v.1.0 -m "Tagging new version"
       
@@ -45,9 +43,7 @@ jobs:
 
       - name: Build Docker image
         run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
-
-     
-
+   
       - name: Helm lint
         run: helm lint ${{ env.HELM_REPO }}
 
