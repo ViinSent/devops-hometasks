@@ -48,7 +48,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest -f Dockerfile . --push
+        run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }} -f Dockerfile . --push
                                                              # -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
   
       - name: Helm lint
@@ -59,9 +59,6 @@ jobs:
 
       # - name: Update Helm repository index
       #   run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
-        
-      - name: Create tag for main branch
-        run: docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }}
 
       # - name: Deploy Helm chart with Argo CD
       #   run: |
