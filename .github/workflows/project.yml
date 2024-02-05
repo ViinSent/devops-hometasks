@@ -39,6 +39,7 @@ jobs:
           password: ${{ secrets.ACTION_TOKEN }}
   build:
     runs-on: ubuntu-latest
+    needs: prepare
     
     steps:
       - name: Set up Docker Buildx
@@ -48,6 +49,7 @@ jobs:
         run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
   helm:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Helm lint
         run: helm lint ${{ env.HELM_REPO }}
