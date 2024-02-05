@@ -28,7 +28,7 @@ jobs:
 
       - name: Create Git tag
         run: |
-          echo TAG_NAME=$( echo ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}) >> $GITHUB_ENV
+          echo TAG_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }} >> $GITHUB_ENV
           git tag -a ${{ env.TAG_NAME }} -m "Tagging new version"
       
       - name: Log into registry ${{ env.REGISTRY }}
