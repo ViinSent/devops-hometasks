@@ -7,6 +7,8 @@ on:
 env:
   IMAGE_NAME: "wcg"
   REGISTRY: "ghcr.io"
+  HELM_REPO: "12-helm"
+  CHART_NAME: "wcg"
 
 jobs:
   build:
@@ -35,5 +37,43 @@ jobs:
       - name: Build Docker image
         run: docker buildx create --use && docker buildx build -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest  -t ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} -f Dockerfile . --push
 
-#      - name: Check to pull docker-image
-#        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Create Git tag
+        run: git tag -a <tag_name> -m "Tagging new version"
+
+      - name: Helm lint
+        run: helm lint ${{ env.HELM_REPO }}
+
+      - name: Package Helm chart
+        run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
+
+      - name: Update Helm repository index
+        run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
+        
+      - name: Create tag for main branch
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest ${{ env.REGISTRY }}/${{ env.IMAGE_REPOSITORY }}/${{ env.IMAGE_NAME }}:main
+
+      # - name: Helm lint
+      #   run: helm lint path/to/your/chart
+
+      # - name: Package Helm chart
+      #   run: helm package path/to/your/chart -d ./helm-package
+
+      # - name: Update Helm repository index
+      #   run: helm repo index ./helm-package --url https://your-helm-repo-url.com
+
+      # - name: Deploy Helm chart with Argo CD
+      #   run: |
+      #     argocd login <ARGOCD_SERVER> --username <USERNAME> --password <PASSWORD>
+      #     argocd app create <APP_NAME> --repo <HELM_REPO_URL> --path <CHART_PATH> --dest-namespace <NAMESPACE> --dest-server https://kubernetes.default.svc --sync-policy auto
+      #     argocd app set <APP_NAME> --values path/to/values.yaml
+      #     argocd app sync <APP_NAME>
+      #   env:
+      #     ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+      #     USERNAME: ${{ secrets.ARGOCD_USERNAME }}
+      #     PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
+      #     APP_NAME: your-app-name
+      #     HELM_REPO_URL: https://your-helm-repo-url.com
+      #     CHART_PATH: path/to/your/chart
+      #     NAMESPACE: your-namespace
