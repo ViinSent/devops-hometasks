@@ -56,10 +56,10 @@ jobs:
 
       - name: Modify Chart
         run: |
-          sed -i 's/version: 0.0.3/version: ${{ steps.tag_version.outputs.new_tag }}/g' ${{ env.HELM_REPO }}/Chart.yaml
+          sed -i 's/version: ${{ steps.tag_version.outputs.tag }}/version: ${{ steps.tag_version.outputs.new_tag }}/g' ${{ env.HELM_REPO }}/Chart.yaml
     
-      - name: Package Helm chart
-        run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
+      # - name: Package Helm chart
+      #   run: helm package ${{ env.HELM_REPO }} -d ${{ env.HELM_REPO }}
 
       # - name: Update Helm repository index
       #   run: helm repo index ${{ env.HELM_REPO }} --url https://github.com/ViinSent/viinsent.github.io.git
