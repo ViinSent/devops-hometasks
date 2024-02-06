@@ -8,7 +8,6 @@ env:
   IMAGE_NAME: "wcg"
   REGISTRY: "ghcr.io"
   HELM_REPO: "12-helm"
-  CHART_NAME: "wcg"
 
 jobs:
   build:
